@@ -8,7 +8,8 @@
     <div id="app">
       {{ content | safe }}
     </div>
-    <script src="{{ '/client/' + bundle | url }}">
-    </script>
+    <script type="module" src="{{ '/client/' + bundle | url }}"></script>
+    <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.3.2/s.min.js"></script>
+    <script nomodule src="{{ '/client_legacy/' + bundle | url }}"></script>
   </body>
 </html>

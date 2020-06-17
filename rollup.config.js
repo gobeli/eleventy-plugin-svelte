@@ -3,34 +3,55 @@ import copy from "rollup-plugin-copy";
 import resolve from "@rollup/plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
 
-module.exports = [
+import { sync as globby } from 'globby';
+import { basename, dirname, join } from 'path'
+
+const stripExtension = file => join(dirname(file), basename(file, '.js'))
+
+const input = globby('**/*.11ty.js', { gitignore: true })
+  .reduce((acc, i) => ({ ...acc, [stripExtension(i)]: i }), {})
+const dev = process.env.NODE_ENV === 'development'
+
+export default [
   {
-    input: "index.11ty.js",
+    input,
     plugins: [
       svelte({
         generate: "ssr",
+        dev,
+        css: false
       }),
       copy({
-        targets: [{ src: "_layouts", dest: "build/ssr" }],
+        targets: [{ src: "_layouts/*.njk", dest: "_build/ssr/_layouts" }],
       }),
     ],
     output: {
-      dir: "build/ssr",
+      dir: "_build/ssr",
       format: "cjs",
     },
+    external: [/^svelte/]
   },
   {
-    input: "index.11ty.js",
+    input,
     plugins: [
       svelte({
         hydratable: true,
+        dev,
+        css: false
       }),
-      resolve(),
-      terser(),
+      resolve({
+				browser: true,
+				dedupe: ['svelte']
+			}),
+      !dev && terser(),
     ],
-    output: {
-      dir: "build/client",
-      format: "iife",
-    },
+    output: [{
+      dir: "_build/client",
+      format: "esm",
+    }, {
+      dir: "_build/client_legacy",
+      format: "system",
+      sourcemap: true
+    }],
   },
 ];

@@ -1,4 +1,4 @@
-import Index from "./src/pages/Index.svelte";
+import Button from '../src/common/Button.svelte'
 
 // if in browser
 if (typeof window !== "undefined") {
@@ -14,12 +14,12 @@ if (typeof window !== "undefined") {
 export default class Test {
   data() {
     return {
-      layout: "svelte.11ty.js",
-      bundle: "index.11ty.js",
-      Component: Index,
-      porps: {
-        name: "Ted",
-      }
+      layout: "base.njk",
+      bundle: "subfolder/newpage.11ty.js",
     };
+  }
+
+  render() {
+    return Button.render().html;
   }
 }
