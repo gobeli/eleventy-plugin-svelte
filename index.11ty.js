@@ -1,25 +1,28 @@
-import Index from "./src/pages/Index.svelte";
+import IndexComponent from './src/pages/Index.svelte'
 
 // if in browser
-if (typeof window !== "undefined") {
-  new Index({
+if (typeof window !== 'undefined') {
+  new IndexComponent({
     props: {
-      name: "Ted",
+      name: 'Ted',
     },
-    target: document.getElementById("app"),
+    target: document.getElementById('app'),
     hydrate: true,
-  });
+  })
 }
 
-export default class Test {
+export default class Index {
   data() {
     return {
-      layout: "svelte.11ty.js",
-      bundle: "index.11ty.js",
-      Component: Index,
+      layout: 'base.njk',
+      bundle: 'index.11ty.js',
       porps: {
-        name: "Ted",
-      }
-    };
+        name: 'Ted',
+      },
+    }
+  }
+
+  render({ props, collections }) {
+    return IndexComponent.render({ posts: collections.posts.map((post) => post.data), ...props }).html
   }
 }

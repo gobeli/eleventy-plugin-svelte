@@ -1,15 +1,15 @@
-import svelte from "rollup-plugin-svelte";
-import copy from "rollup-plugin-copy";
-import resolve from "@rollup/plugin-node-resolve";
-import { terser } from "rollup-plugin-terser";
+import svelte from 'rollup-plugin-svelte'
+import copy from 'rollup-plugin-copy'
+import resolve from '@rollup/plugin-node-resolve'
+import { terser } from 'rollup-plugin-terser'
+import postcss from 'rollup-plugin-postcss'
 
-import { sync as globby } from 'globby';
+import { sync as globby } from 'globby'
 import { basename, dirname, join } from 'path'
 
-const stripExtension = file => join(dirname(file), basename(file, '.js'))
+const stripExtension = (file) => join(dirname(file), basename(file, '.js'))
 
-const input = globby('**/*.11ty.js', { gitignore: true })
-  .reduce((acc, i) => ({ ...acc, [stripExtension(i)]: i }), {})
+const input = globby('**/*.11ty.js', { gitignore: true }).reduce((acc, i) => ({ ...acc, [stripExtension(i)]: i }), {})
 const dev = process.env.NODE_ENV === 'development'
 
 export default [
@@ -17,19 +17,22 @@ export default [
     input,
     plugins: [
       svelte({
-        generate: "ssr",
+        generate: 'ssr',
         dev,
-        css: false
+        css: false,
       }),
       copy({
-        targets: [{ src: "_layouts/*.njk", dest: "_build/ssr/_layouts" }],
+        targets: [
+          { src: 'posts/*', dest: '_build/ssr/posts' },
+          { src: '_layouts/*.njk', dest: '_build/ssr/_layouts' },
+        ],
       }),
     ],
     output: {
-      dir: "_build/ssr",
-      format: "cjs",
+      dir: '_build/ssr',
+      format: 'cjs',
     },
-    external: [/^svelte/]
+    external: [/^svelte/],
   },
   {
     input,
@@ -37,21 +40,25 @@ export default [
       svelte({
         hydratable: true,
         dev,
-        css: false
+        emitCss: true,
       }),
       resolve({
-				browser: true,
-				dedupe: ['svelte']
-			}),
+        browser: true,
+        dedupe: ['svelte'],
+      }),
+      postcss(),
       !dev && terser(),
     ],
-    output: [{
-      dir: "_build/client",
-      format: "esm",
-    }, {
-      dir: "_build/client_legacy",
-      format: "system",
-      sourcemap: true
-    }],
+    output: [
+      {
+        dir: '_build/client',
+        format: 'esm',
+      },
+      {
+        dir: '_build/client_legacy',
+        format: 'system',
+        sourcemap: true,
+      },
+    ],
   },
-];
+]

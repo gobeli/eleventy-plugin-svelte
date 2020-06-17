@@ -1,22 +1,22 @@
-import About from "./src/pages/About.svelte";
+import AboutComponent from './src/pages/About.svelte'
 
 // if in browser
-if (typeof window !== "undefined") {
-  new About({
-    target: document.getElementById("app"),
+if (typeof window !== 'undefined') {
+  new AboutComponent({
+    target: document.getElementById('app'),
     hydrate: true,
-  });
+  })
 }
 
-export default class Test {
+export default class About {
   data() {
     return {
-      layout: "base.njk",
-      bundle: "about.11ty.js",
-    };
+      layout: 'base.njk',
+      bundle: 'about.11ty.js',
+    }
   }
 
   render() {
-    return About.render().html;
+    return AboutComponent.render().html
   }
 }
