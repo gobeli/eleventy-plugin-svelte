@@ -1,4 +1,4 @@
-import IndexComponent from './src/pages/Index.svelte'
+import IndexComponent from './svelte/pages/Index.svelte'
 
 // if in browser
 if (typeof window !== 'undefined') {

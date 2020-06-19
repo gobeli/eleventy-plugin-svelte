@@ -1,4 +1,4 @@
-import AboutComponent from './src/pages/About.svelte'
+import AboutComponent from './svelte/pages/About.svelte'
 
 // if in browser
 if (typeof window !== 'undefined') {

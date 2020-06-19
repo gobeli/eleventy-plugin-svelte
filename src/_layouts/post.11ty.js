@@ -1,4 +1,4 @@
-import PostComponent from '../src/pages/Post.svelte'
+import PostComponent from '../svelte/pages/Post.svelte'
 
 // if in browser
 if (typeof window !== 'undefined') {

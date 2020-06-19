@@ -4,21 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf _site _build",
     "dev:rollup": "rollup -c --watch ",
     "dev:11ty": "npx @11ty/eleventy --serve",
     "build:rollup": "rollup -c ",
     "build:11ty": "npx @11ty/eleventy",
     "start": "env NODE_ENV=development npm-run-all --parallel dev:*",
-    "build": "npm-run-all --serial build:*"
+    "build": "npm-run-all --serial clean build:*"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@11ty/eleventy": "^0.11.0",
     "@rollup/plugin-node-resolve": "^8.0.1",
+    "fs-extra": "^9.0.1",
     "globby": "^11.0.1",
     "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
     "rollup": "^2.16.1",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-postcss": "^3.1.2",
