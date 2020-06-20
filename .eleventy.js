@@ -10,11 +10,7 @@ module.exports = function (eleventyConfig, configGlobalOptions = {}) {
     // read: false, // We use rollup to read the files
     getData: true,
     getInstanceFromInputPath: function (inputPath) {
-      const component = eleventySvelte.getComponent(path.normalize(inputPath)).ssr
-      const ret = {
-        data: component.preload ? component.preload() : {},
-      }
-      return ret
+      return eleventySvelte.getComponent(path.normalize(inputPath)).ssr
     },
     init: async function () {
       eleventySvelte.setInputDir(this.config.inputDir, this.config.dir.includes)

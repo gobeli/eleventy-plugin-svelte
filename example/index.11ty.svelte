@@ -1,5 +1,5 @@
 <script context="module">
-  export const preload = () => {
+  export const data = () => {
     return {
       layout: 'layouts/main.njk',
       title: 'Index'
