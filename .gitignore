@@ -1,3 +1,4 @@
-_build/
-_site/
-node_modules/
+_site
+node_modules
+example/_site
+example/.cache

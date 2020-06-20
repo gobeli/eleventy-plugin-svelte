@@ -1,3 +1,3 @@
-# Static Site Starter with eleventy and svelte
+# Eleventy Plugin to enable svelte
 
-`npm start`
+Currently only supports prerendering
