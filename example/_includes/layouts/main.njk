@@ -8,4 +8,7 @@
   <body>
     {{ content | safe }}
   </body>
+  <script>
+    window.__DATA__ = {{ dataFn | getDataForComponent | safe }}
+  </script>
 </html>

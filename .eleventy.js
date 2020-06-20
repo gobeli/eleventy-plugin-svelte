@@ -6,6 +6,13 @@ module.exports = function (eleventyConfig, configGlobalOptions = {}) {
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 
+  eleventyConfig.addFilter('getDataForComponent', function (dataFn) {
+    if (typeof dataFn === 'function') {
+      return JSON.stringify(dataFn(this.ctx))
+    }
+    return '{}'
+  })
+
   eleventyConfig.addExtension('11ty.svelte', {
     // read: false, // We use rollup to read the files
     getData: true,

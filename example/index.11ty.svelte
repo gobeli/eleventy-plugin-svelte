@@ -2,7 +2,12 @@
   export const data = () => {
     return {
       layout: 'layouts/main.njk',
-      title: 'Index'
+      title: 'Index',
+      dataFn: data => ({
+        collections: {
+          all: data.collections.all.map(p => ({ title: p.data.title }))
+        }
+      })
     }
   }
 </script>
