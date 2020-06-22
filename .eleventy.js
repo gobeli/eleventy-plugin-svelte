@@ -13,6 +13,23 @@ module.exports = function (eleventyConfig, configGlobalOptions = {}) {
     return '{}'
   })
 
+  eleventyConfig.addPassthroughCopy({ [eleventySvelte.clientDir]: 'client' })
+
+  eleventyConfig.addFilter('getSvelteClient', function (id) {
+    const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
+    const assets = eleventySvelte.getAssetUrls(component)
+    return `
+      <script type="module">
+        import Component from '/${assets.client}';
+        new Component({
+          target: document.getElementById('${id}'),
+          props: window.__DATA__,
+          hydrate: true
+        })
+      </script>
+    `
+  })
+
   eleventyConfig.addExtension('11ty.svelte', {
     // read: false, // We use rollup to read the files
     getData: true,

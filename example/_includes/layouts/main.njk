@@ -6,9 +6,12 @@
     <title>{{ title }}</title>
   </head>
   <body>
-    {{ content | safe }}
+    <div id="app">
+      {{ content | safe }}
+    </div>
   </body>
   <script>
     window.__DATA__ = {{ dataFn | getDataForComponent | safe }}
   </script>
+  {{ "app" | getSvelteClient | safe }}
 </html>

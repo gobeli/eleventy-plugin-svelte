@@ -117,6 +117,13 @@ class EleventySvelte {
   renderComponent(component, props) {
     return component.render(props).html
   }
+
+  getAssetUrls(component) {
+    return {
+      client: path.relative(this.cacheDir, component.client),
+      clientLegacy: path.relative(this.cacheDir, component.clientLegacy),
+    }
+  }
 }
 
 module.exports = EleventySvelte

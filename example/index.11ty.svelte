@@ -5,7 +5,7 @@
       title: 'Index',
       dataFn: data => ({
         collections: {
-          all: data.collections.all.map(p => ({ title: p.data.title }))
+          all: data.collections.all.map(p => ({ url: p.url, data: { title: p.data.title } }))
         }
       })
     }
@@ -15,11 +15,21 @@
 <script>
   import Nav from './components/nav.svelte'
 
+  let name = 'test'
+
   export let collections = {}
 </script>
 
 <Nav />
 
-{#each collections.all as obj}
-  <h1>{obj.data.title}</h1>
-{/each}
+<h1>{name}</h1>
+
+<input bind:value={name} />
+
+<ul>
+  {#each collections.all as obj}
+    <li>
+      <a href={obj.url}>{obj.data.title}</a>
+    </li>
+  {/each}
+</ul>
