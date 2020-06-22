@@ -1,3 +1,6 @@
 # Eleventy Plugin to enable svelte
 
-Currently only supports prerendering
+## Roadmap
+
+- CSS optimization
+- Use `svelte` files as Layout

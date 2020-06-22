@@ -1,8 +1,16 @@
 const EleventySvelte = require('./EleventySvelte')
 const path = require('path')
+const url = require('url')
 
-module.exports = function (eleventyConfig, configGlobalOptions = {}) {
-  const eleventySvelte = new EleventySvelte()
+const defaultOptions = {
+  cacheDir: '.cache/svelte',
+  assetDir: 'assets',
+}
+
+module.exports = function (eleventyConfig, configOptions = {}) {
+  const options = { ...defaultOptions, ...configOptions }
+
+  const eleventySvelte = new EleventySvelte(options.cacheDir)
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 
@@ -13,20 +21,31 @@ module.exports = function (eleventyConfig, configGlobalOptions = {}) {
     return '{}'
   })
 
-  eleventyConfig.addPassthroughCopy({ [eleventySvelte.clientDir]: 'client' })
-
   eleventyConfig.addFilter('getSvelteClient', function (id) {
     const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
     const assets = eleventySvelte.getAssetUrls(component)
     return `
-      <script type="module">
-        import Component from '/${assets.client}';
-        new Component({
-          target: document.getElementById('${id}'),
-          props: window.__DATA__,
-          hydrate: true
-        })
-      </script>
+      import Component from '${eleventySvelte.pathPrefix}${url.format(path.join(options.assetDir, assets.client))}';
+      new Component({
+        target: document.getElementById('${id}'),
+        props: window.__DATA__,
+        hydrate: true
+      })
+    `
+  })
+
+  eleventyConfig.addFilter('getSvelteClientLegacy', function (id) {
+    const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
+    const assets = eleventySvelte.getAssetUrls(component)
+    return `
+      System.import('/${url.format(path.join(options.assetDir, assets.clientLegacy))}')
+        .then(c => {
+          new c.default({
+            target: document.getElementById('${id}'),
+            props: window.__DATA__,
+            hydrate: true
+          });
+        });
     `
   })
 
@@ -37,8 +56,8 @@ module.exports = function (eleventyConfig, configGlobalOptions = {}) {
       return eleventySvelte.getComponent(path.normalize(inputPath)).ssr
     },
     init: async function () {
-      eleventySvelte.setInputDir(this.config.inputDir, this.config.dir.includes)
-
+      eleventySvelte.setPathPrefix(this.config.pathPrefix)
+      eleventySvelte.setDirs(options.cacheDir, path.join(this.config.dir.output, options.assetDir))
       let components = await eleventySvelte.write()
 
       for (let component of components) {

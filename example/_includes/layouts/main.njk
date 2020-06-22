@@ -13,5 +13,11 @@
   <script>
     window.__DATA__ = {{ dataFn | getDataForComponent | safe }}
   </script>
-  {{ "app" | getSvelteClient | safe }}
+  <script type="module">
+    {{ "app" | getSvelteClient | safe }}
+  </script>
+  <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.3.2/s.min.js"></script>
+  <script nomodule>
+    {{ "app" | getSvelteClientLegacy | safe }}
+  </script>
 </html>

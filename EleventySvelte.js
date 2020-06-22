@@ -6,39 +6,41 @@ const svelte = require('rollup-plugin-svelte')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
-  constructor(cacheDirectory = '.cache/svelte') {
+  constructor() {
     this.dev = process.env.NODE_ENV === 'development'
     this.workingDir = process.cwd()
     this.components = {}
     this.componentsToJsPath = {}
-
-    this.setCacheDir(cacheDirectory)
   }
 
-  setCacheDir(cacheDir) {
+  setPathPrefix(pathPrefix) {
+    this.pathPrefix = pathPrefix
+  }
+
+  setDirs(cacheDir, outputDir) {
+    this.outputDir = outputDir
+    this.clientDir = path.join(outputDir, 'client')
+    this.clientLegacyDir = path.join(outputDir, 'client_legacy')
+
     this.cacheDir = path.join(this.workingDir, cacheDir)
     this.ssrDir = path.join(this.cacheDir, 'ssr')
-    this.clientDir = path.join(this.cacheDir, 'client')
-    this.clientLegacyDir = path.join(this.cacheDir, 'client_legacy')
     this.rollupBundleClientOptions = [
       {
         dir: this.clientDir,
         format: 'esm',
+        exports: 'named',
       },
       {
         dir: this.clientLegacyDir,
         format: 'system',
+        exports: 'named',
       },
     ]
     this.rollupBundleSSROptions = {
       dir: this.ssrDir,
       format: 'cjs',
+      exports: 'named',
     }
-  }
-
-  setInputDir(inputDir, includeDir) {
-    this.inputDir = inputDir
-    this.includeDir = includeDir
   }
 
   async getBundle() {
@@ -120,8 +122,8 @@ class EleventySvelte {
 
   getAssetUrls(component) {
     return {
-      client: path.relative(this.cacheDir, component.client),
-      clientLegacy: path.relative(this.cacheDir, component.clientLegacy),
+      client: path.relative(this.outputDir, component.client),
+      clientLegacy: path.relative(this.outputDir, component.clientLegacy),
     }
   }
 }

@@ -20,6 +20,12 @@
   export let collections = {}
 </script>
 
+<style>
+  h1 {
+    color: red;
+  }
+</style>
+
 <Nav />
 
 <h1>{name}</h1>
