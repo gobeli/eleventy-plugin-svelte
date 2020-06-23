@@ -11,6 +11,12 @@
   import Nav from './components/nav.svelte'
 </script>
 
+<style>
+  h1 {
+    color: teal;
+  }
+</style>
+
 <Nav />
 
 <h1>Hello from about</h1>

@@ -1,6 +1,6 @@
 {
-  "name": "svelte-11ty",
-  "version": "1.0.0",
+  "name": "eleventy-plugin-svelte",
+  "version": "0.0.1",
   "description": "",
   "main": ".eleventy.js",
   "scripts": {

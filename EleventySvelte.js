@@ -3,14 +3,16 @@ const path = require('path')
 const globby = require('globby')
 const rollup = require('rollup')
 const svelte = require('rollup-plugin-svelte')
+const postcss = require('rollup-plugin-postcss')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
-  constructor() {
+  constructor(postCssOptions) {
     this.dev = process.env.NODE_ENV === 'development'
     this.workingDir = process.cwd()
     this.components = {}
     this.componentsToJsPath = {}
+    this.postCssOptions = postCssOptions
   }
 
   setPathPrefix(pathPrefix) {
@@ -62,11 +64,13 @@ class EleventySvelte {
         svelte({
           hydratable: true,
           dev: this.dev,
+          emitCss: true,
         }),
         nodeResolve({
           browser: true,
           dedupe: ['svelte'],
         }),
+        postcss(this.postCssOptions),
       ],
     })
     return { ssr, client }

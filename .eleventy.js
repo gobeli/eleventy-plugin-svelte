@@ -5,20 +5,22 @@ const url = require('url')
 const defaultOptions = {
   cacheDir: '.cache/svelte',
   assetDir: 'assets',
+  postCssOptions: {},
 }
 
 module.exports = function (eleventyConfig, configOptions = {}) {
   const options = { ...defaultOptions, ...configOptions }
 
-  const eleventySvelte = new EleventySvelte(options.cacheDir)
+  const eleventySvelte = new EleventySvelte(options.postCssOptions)
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 
   eleventyConfig.addFilter('getDataForComponent', function (dataFn) {
+    const data = 'window.__DATA__ = '
     if (typeof dataFn === 'function') {
-      return JSON.stringify(dataFn(this.ctx))
+      return data + JSON.stringify(dataFn(this.ctx))
     }
-    return '{}'
+    return data + '{}'
   })
 
   eleventyConfig.addFilter('getSvelteClient', function (id) {

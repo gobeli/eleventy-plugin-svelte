@@ -11,7 +11,7 @@
     </div>
   </body>
   <script>
-    window.__DATA__ = {{ dataFn | getDataForComponent | safe }}
+    {{ dataFn | getDataForComponent | safe }}
   </script>
   <script type="module">
     {{ "app" | getSvelteClient | safe }}
