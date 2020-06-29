@@ -74,7 +74,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
       return async (data) => {
         if (str && typeof str === 'function') {
           // When str has a value, it's being used for permalinks in data
-          return str
+          return str(data)
         }
         const component = eleventySvelte.getComponent(path.normalize(data.page.inputPath))
         return eleventySvelte.renderComponent(component.ssr.default, data)

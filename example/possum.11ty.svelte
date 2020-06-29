@@ -18,13 +18,20 @@
         size: 1,
         alias: 'possum'
       },
-      permalink: ({ possum }) => `possums/${slug(possum.name)}/`
+      permalink: ({ possum }) => `possums/${slug(possum.name)}/`,
+      dataFn: data => ({
+        possum: data.possum
+      })
     }
   }
 </script>
 
 <script>
   import Nav from './components/nav.svelte'
+
+  export let possum
 </script>
 
 <Nav />
+
+<h1>{possum.name}</h1>
