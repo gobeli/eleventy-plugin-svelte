@@ -11,7 +11,7 @@ Heavily inspired by [eleventy-plugin-vue](https://github.com/11ty/eleventy-plugi
 ## Features
 
 - Builds `*.svelte` single file components.
-- Emits client side JavaScript code which can be included in on the site to enable hydration of the static HTML.
+- Emits client side JavaScript code which can be included on the site to enable hydration of the static HTML.
 - Data which is defined in the `data` function (module context) feeds into the data cascade.
 - Data is supplied via Svelte props, to use the data during runtime you have to define a `dataFn` which defines what will be provided as props at runtime. (see [example](example))
 
