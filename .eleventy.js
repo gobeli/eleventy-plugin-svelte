@@ -53,7 +53,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   })
 
   eleventyConfig.addExtension('11ty.svelte', {
-    // read: false, // We use rollup to read the files
+    read: false, // We use rollup to read the files
     getData: true,
     getInstanceFromInputPath: function (inputPath) {
       return eleventySvelte.getComponent(path.normalize(inputPath)).ssr
@@ -72,6 +72,10 @@ module.exports = function (eleventyConfig, configOptions = {}) {
     },
     compile: function (str, inputPath) {
       return async (data) => {
+        if (str && typeof str === 'function') {
+          // When str has a value, it's being used for permalinks in data
+          return str
+        }
         const component = eleventySvelte.getComponent(path.normalize(data.page.inputPath))
         return eleventySvelte.renderComponent(component.ssr.default, data)
       }
