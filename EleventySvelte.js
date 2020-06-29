@@ -7,12 +7,13 @@ const postcss = require('rollup-plugin-postcss')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
-  constructor(postCssOptions) {
+  constructor(postCssOptions, outputClient) {
     this.dev = process.env.NODE_ENV === 'development'
     this.workingDir = process.cwd()
     this.components = {}
     this.componentsToJsPath = {}
     this.postCssOptions = postCssOptions
+    this.outputClient = outputClient
   }
 
   setPathPrefix(pathPrefix) {
@@ -80,16 +81,19 @@ class EleventySvelte {
     const { ssr, client } = await this.getBundle()
 
     const ssrOutput = await ssr.write(this.rollupBundleSSROptions)
-    const [clientOutput, clientOutputLegacy] = await Promise.all(
-      this.rollupBundleClientOptions.map((output) => client.write(output))
-    )
+    let clientOutput, clientOutputLegacy
+    if (this.outputClient) {
+      ;[clientOutput, clientOutputLegacy] = await Promise.all(
+        this.rollupBundleClientOptions.map((output) => client.write(output))
+      )
+    }
 
     const components = ssrOutput.output
       .filter((entry) => !!entry.facadeModuleId)
       .map((entry) => ({
         ssr: entry,
-        client: clientOutput.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
-        clientLegacy: clientOutputLegacy.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
+        client: clientOutput && clientOutput.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
+        clientLegacy: clientOutput && clientOutputLegacy.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
       }))
 
     return components

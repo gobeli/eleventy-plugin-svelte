@@ -5,13 +5,14 @@ const url = require('url')
 const defaultOptions = {
   cacheDir: '.cache/svelte',
   assetDir: 'assets',
+  outputClient: true,
   postCssOptions: {},
 }
 
 module.exports = function (eleventyConfig, configOptions = {}) {
   const options = { ...defaultOptions, ...configOptions }
 
-  const eleventySvelte = new EleventySvelte(options.postCssOptions)
+  const eleventySvelte = new EleventySvelte(options.postCssOptions, options.outputClient)
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 

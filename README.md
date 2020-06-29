@@ -44,6 +44,9 @@ module.exports = function (eleventyConfig) {
     // Directory to emit client side JS code
     assetDir: 'assets',
 
+    // If false client side bundle is not generated
+    outputClient: true,
+
     // rollup-plugin-postcss Options
     postCssOptions: {
       extract: true,
