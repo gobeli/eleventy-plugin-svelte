@@ -44,7 +44,7 @@ class EleventySvelte {
   }
 
   async getBundle() {
-    const input = await globby('**/*.11ty.svelte')
+    const input = await globby('**/*.11ty.svelte', { gitignore: this.options.useGitIgnore })
     const ssr = await rollup.rollup({
       input,
       plugins: [
