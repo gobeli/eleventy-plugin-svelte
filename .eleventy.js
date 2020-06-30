@@ -13,7 +13,7 @@ const defaultOptions = {
 }
 
 module.exports = function (eleventyConfig, configOptions = {}) {
-  const options = { ...defaultOptions, ...configOptions }
+  const options = { ...eleventyConfig, ...defaultOptions, ...configOptions }
 
   const eleventySvelte = new EleventySvelte(options)
 
@@ -75,9 +75,9 @@ module.exports = function (eleventyConfig, configOptions = {}) {
     },
     compile: function (str, inputPath) {
       return async (data) => {
-        if (str && typeof str === 'function') {
+        if (str) {
           // When str has a value, it's being used for permalinks in data
-          return str(data)
+          return typeof str === 'function' ? str(data) : str
         }
         const component = eleventySvelte.getComponent(path.normalize(data.page.inputPath))
         return eleventySvelte.renderComponent(component.ssr.default, data)
