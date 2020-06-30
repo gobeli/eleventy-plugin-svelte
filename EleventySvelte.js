@@ -50,6 +50,7 @@ class EleventySvelte {
       plugins: [
         svelte({
           generate: 'ssr',
+          hydratable: true,
           css: false,
           ...this.options.rollupPluginSvelteSSROptions,
         }),
@@ -61,7 +62,6 @@ class EleventySvelte {
       input,
       plugins: [
         svelte({
-          hydratable: true,
           ...this.options.rollupPluginSvelteClientOptions,
         }),
         nodeResolve({
