@@ -7,8 +7,26 @@
     "dev": "cd example && env ELEVENTY_EXPERIMENTAL=true NODE_ENV=development npx @11ty/eleventy --serve",
     "build": "cd example && env ELEVENTY_EXPERIMENTAL=true npx @11ty/eleventy"
   },
-  "author": "",
-  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gobeli/eleventy-plugin-svelte.git"
+  },
+  "keywords": [
+    "eleventy",
+    "eleventy-plugin",
+    "svelte"
+  ],
+  "author": {
+    "name": "Etienne Gobeli"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gobeli/eleventy-plugin-svelte/issues"
+  },
+  "homepage": "https://github.com/gobeli/eleventy-plugin-svelte#readme",
   "dependencies": {
     "@rollup/plugin-node-resolve": "^8.0.1",
     "globby": "^11.0.1",
