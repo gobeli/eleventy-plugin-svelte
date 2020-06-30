@@ -62,6 +62,7 @@ class EleventySvelte {
       input,
       plugins: [
         svelte({
+          hydratable: true,
           ...this.options.rollupPluginSvelteClientOptions,
         }),
         nodeResolve({
