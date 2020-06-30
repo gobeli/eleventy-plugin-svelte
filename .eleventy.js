@@ -6,13 +6,16 @@ const defaultOptions = {
   cacheDir: '.cache/svelte',
   assetDir: 'assets',
   outputClient: true,
-  postCssOptions: {},
+  rollupPluginSvelteSSROptions: {},
+  rollupPluginSvelteClientOptions: {},
+  rollupClientPlugins: [],
+  rollupSSRPlugins: [],
 }
 
 module.exports = function (eleventyConfig, configOptions = {}) {
   const options = { ...defaultOptions, ...configOptions }
 
-  const eleventySvelte = new EleventySvelte(options.postCssOptions, options.outputClient)
+  const eleventySvelte = new EleventySvelte(options)
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 

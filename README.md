@@ -47,12 +47,43 @@ module.exports = function (eleventyConfig) {
     // If false client side bundle is not generated
     outputClient: true,
 
-    // rollup-plugin-postcss Options
-    postCssOptions: {
-      extract: true,
-    },
+    // Options for the rollup-plugin-svelte for prerendering 
+    rollupPluginSvelteSSROptions: {},
+    
+    // Options for the rollup-plugin-svelte for the client side code 
+    rollupPluginSvelteClientOptions: {},
+    
+    // Additional rollup plugins for prerendering
+    rollupSSRPlugins: [],
+    
+    // Additional rollup plugins for the client side code
+    rollupClientPlugins: [],
   })
 }
+```
+
+### Example Configuration
+
+```js
+const eleventySvelte = require('eleventy-plugin-svelte')
+const postcss = require('rollup-plugin-postcss')
+const terser = require('rollup-plugin-terser').terser
+
+const dev = process.env.NODE_ENV === 'development'
+
+module.exports = function (eleventyConfig) {
+  eleventyConfig.addPlugin(eleventySvelte, {
+    rollupPluginSvelteSSROptions: {
+      dev,
+    },
+    rollupPluginSvelteClientOptions: {
+      dev,
+      emitCss: true,
+    },
+    rollupClientPlugins: [postcss(), !dev && terser()],
+  })
+}
+
 ```
 
 ### Template Functions

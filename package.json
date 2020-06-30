@@ -4,7 +4,7 @@
   "description": "",
   "main": ".eleventy.js",
   "scripts": {
-    "dev": "cd example && env ELEVENTY_EXPERIMENTAL=true npx @11ty/eleventy --serve",
+    "dev": "cd example && env ELEVENTY_EXPERIMENTAL=true NODE_ENV=development npx @11ty/eleventy --serve",
     "build": "cd example && env ELEVENTY_EXPERIMENTAL=true npx @11ty/eleventy"
   },
   "author": "",
@@ -13,12 +13,12 @@
     "@rollup/plugin-node-resolve": "^8.0.1",
     "globby": "^11.0.1",
     "rollup": "^2.16.1",
-    "rollup-plugin-postcss": "^3.1.2",
     "rollup-plugin-svelte": "^5.2.2",
-    "rollup-plugin-terser": "^6.1.0",
     "svelte": "^3.23.2"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^0.11.0"
+    "@11ty/eleventy": "^0.11.0",
+    "rollup-plugin-postcss": "^3.1.2",
+    "rollup-plugin-terser": "^6.1.0"
   }
 }

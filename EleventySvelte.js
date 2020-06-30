@@ -3,17 +3,14 @@ const path = require('path')
 const globby = require('globby')
 const rollup = require('rollup')
 const svelte = require('rollup-plugin-svelte')
-const postcss = require('rollup-plugin-postcss')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
-  constructor(postCssOptions, outputClient) {
-    this.dev = process.env.NODE_ENV === 'development'
+  constructor(options) {
     this.workingDir = process.cwd()
     this.components = {}
     this.componentsToJsPath = {}
-    this.postCssOptions = postCssOptions
-    this.outputClient = outputClient
+    this.options = options
   }
 
   setPathPrefix(pathPrefix) {
@@ -53,9 +50,10 @@ class EleventySvelte {
       plugins: [
         svelte({
           generate: 'ssr',
-          dev: this.dev,
           css: false,
+          ...this.options.rollupPluginSvelteSSROptions,
         }),
+        ...this.options.rollupSSRPlugins,
       ],
       external: [/^svelte/],
     })
@@ -64,14 +62,13 @@ class EleventySvelte {
       plugins: [
         svelte({
           hydratable: true,
-          dev: this.dev,
-          emitCss: true,
+          ...this.options.rollupPluginSvelteClientOptions,
         }),
         nodeResolve({
           browser: true,
           dedupe: ['svelte'],
         }),
-        postcss(this.postCssOptions),
+        ...this.options.rollupClientPlugins,
       ],
     })
     return { ssr, client }
@@ -82,7 +79,7 @@ class EleventySvelte {
 
     const ssrOutput = await ssr.write(this.rollupBundleSSROptions)
     let clientOutput, clientOutputLegacy
-    if (this.outputClient) {
+    if (this.options.outputClient) {
       ;[clientOutput, clientOutputLegacy] = await Promise.all(
         this.rollupBundleClientOptions.map((output) => client.write(output))
       )

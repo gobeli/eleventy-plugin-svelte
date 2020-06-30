@@ -13,7 +13,7 @@
 
 <style>
   h1 {
-    color: teal;
+    color: green;
   }
 </style>
 
