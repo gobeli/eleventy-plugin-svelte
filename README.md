@@ -1,5 +1,5 @@
-![npm](https://img.shields.io/npm/dw/eleventy-plugin-svelte) 
-![npm](https://img.shields.io/npm/v/eleventy-plugin-svelte)
+[![npm](https://img.shields.io/npm/dw/eleventy-plugin-svelte)](https://www.npmjs.com/package/eleventy-plugin-svelte)
+[![npm](https://img.shields.io/npm/v/eleventy-plugin-svelte)](https://www.npmjs.com/package/eleventy-plugin-svelte)
 
 # Eleventy Plugin to enable svelte
 
