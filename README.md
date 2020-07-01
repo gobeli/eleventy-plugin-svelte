@@ -1,3 +1,6 @@
+![npm](https://img.shields.io/npm/dw/eleventy-plugin-svelte) 
+![npm](https://img.shields.io/npm/v/eleventy-plugin-svelte)
+
 # Eleventy Plugin to enable svelte
 
 Heavily inspired by [eleventy-plugin-vue](https://github.com/11ty/eleventy-plugin-vue).
