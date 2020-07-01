@@ -74,7 +74,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
       }
     },
     compile: function (str, inputPath) {
-      return async (data) => {
+      return (data) => {
         if (str) {
           // When str has a value, it's being used for permalinks in data
           return typeof str === 'function' ? str(data) : str
