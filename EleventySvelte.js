@@ -6,113 +6,108 @@ const svelte = require('rollup-plugin-svelte')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
-  constructor(options) {
+  constructor({
+    cacheDir,
+    assetDir,
+    rollupPluginSvelteSSROptions,
+    rollupSSRPlugins,
+    rollupPluginSvelteClientOptions,
+    rollupClientPlugins,
+    useGitIgnore,
+    outputClient,
+  }) {
     this.workingDir = process.cwd()
     this.components = {}
-    this.componentsToJsPath = {}
-    this.options = options
+
+    this.rollupPluginSvelteSSROptions = rollupPluginSvelteSSROptions
+    this.rollupSSRPlugins = rollupSSRPlugins
+    this.rollupPluginSvelteClientOptions = rollupPluginSvelteClientOptions
+    this.rollupClientPlugins = rollupClientPlugins
+
+    this.ssrDir = path.join(this.workingDir, cacheDir, 'ssr')
+    this.clientDir = path.join(assetDir, 'client')
+    this.clientLegacyDir = path.join(assetDir, 'client_legacy')
+
+    this.useGitIgnore = useGitIgnore
+    this.outputClient = outputClient
   }
 
-  setPathPrefix(pathPrefix) {
-    this.pathPrefix = pathPrefix
-  }
+  async build(outputDir, pathPrefix = '') {
+    const input = await globby('**/*.11ty.svelte', { gitignore: this.useGitIgnore })
 
-  setDirs(cacheDir, outputDir) {
-    this.outputDir = outputDir
-    this.clientDir = path.join(outputDir, 'client')
-    this.clientLegacyDir = path.join(outputDir, 'client_legacy')
+    const ssrOutput = await this.buildSSR(input)
+    let clientOutput, clientLegacyOutput
+    if (this.outputClient) {
+      ;[clientOutput, clientLegacyOutput] = await this.buildClient(input, outputDir)
+    }
 
-    this.cacheDir = path.join(this.workingDir, cacheDir)
-    this.ssrDir = path.join(this.cacheDir, 'ssr')
-    this.rollupBundleClientOptions = [
-      {
-        dir: this.clientDir,
-        format: 'esm',
-        exports: 'named',
-      },
-      {
-        dir: this.clientLegacyDir,
-        format: 'system',
-        exports: 'named',
-      },
-    ]
-    this.rollupBundleSSROptions = {
-      dir: this.ssrDir,
-      format: 'cjs',
-      exports: 'named',
+    for (let entry of ssrOutput.output) {
+      if (!!entry.facadeModuleId) {
+        this.components[path.relative(this.workingDir, entry.facadeModuleId)] = {
+          ssr: require(path.join(this.ssrDir, entry.fileName)),
+          client: clientOutput && path.join(pathPrefix, this.clientDir, entry.fileName),
+          clientLegacy: clientLegacyOutput && path.join(this.clientLegacyDir, entry.fileName),
+        }
+      }
     }
   }
 
-  async getBundle() {
-    const input = await globby('**/*.11ty.svelte', { gitignore: this.options.useGitIgnore })
-    const ssr = await rollup.rollup({
-      input,
-      plugins: [
-        svelte({
-          generate: 'ssr',
-          hydratable: true,
-          css: false,
-          ...this.options.rollupPluginSvelteSSROptions,
-        }),
-        ...this.options.rollupSSRPlugins,
-      ],
-      external: [/^svelte/],
-    })
-    const client = await rollup.rollup({
-      input,
-      plugins: [
-        svelte({
-          hydratable: true,
-          ...this.options.rollupPluginSvelteClientOptions,
-        }),
-        nodeResolve({
-          browser: true,
-          dedupe: ['svelte'],
-        }),
-        ...this.options.rollupClientPlugins,
-      ],
-    })
-    return { ssr, client }
-  }
-
-  async write() {
-    const { ssr, client } = await this.getBundle()
-
-    const ssrOutput = await ssr.write(this.rollupBundleSSROptions)
-    let clientOutput, clientOutputLegacy
-    if (this.options.outputClient) {
-      ;[clientOutput, clientOutputLegacy] = await Promise.all(
-        this.rollupBundleClientOptions.map((output) => client.write(output))
+  buildSSR(input) {
+    return rollup
+      .rollup({
+        input,
+        plugins: [
+          svelte({
+            generate: 'ssr',
+            hydratable: this.outputClient,
+            css: false,
+            ...this.rollupPluginSvelteSSROptions,
+          }),
+          ...this.rollupSSRPlugins,
+        ],
+        external: [/^svelte/],
+      })
+      .then((build) =>
+        build.write({
+          dir: this.ssrDir,
+          format: 'cjs',
+          exports: 'named',
+        })
       )
-    }
-
-    const components = ssrOutput.output
-      .filter((entry) => !!entry.facadeModuleId)
-      .map((entry) => ({
-        ssr: entry,
-        client: clientOutput && clientOutput.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
-        clientLegacy: clientOutput && clientOutputLegacy.output.find((e) => e.facadeModuleId === entry.facadeModuleId),
-      }))
-
-    return components
   }
 
-  getLocalFilePath(fullPath) {
-    return path.relative(this.workingDir, fullPath)
-  }
-
-  addComponentToJsMapping(inputPath, jsFilename) {
-    this.componentsToJsPath[inputPath] = jsFilename
-  }
-
-  addComponent(localPath) {
-    const jsFilename = this.componentsToJsPath[localPath]
-
-    this.components[localPath] = {
-      ssr: require(path.join(this.ssrDir, jsFilename)),
-      client: path.join(this.clientDir, jsFilename),
-      clientLegacy: path.join(this.clientLegacyDir, jsFilename),
-    }
+  buildClient(input, outputDir) {
+    return rollup
+      .rollup({
+        input,
+        plugins: [
+          svelte({
+            hydratable: true,
+            ...this.rollupPluginSvelteClientOptions,
+          }),
+          nodeResolve({
+            browser: true,
+            dedupe: ['svelte'],
+          }),
+          ...this.rollupClientPlugins,
+        ],
+      })
+      .then((build) =>
+        Promise.all(
+          [
+            {
+              dir: path.join(outputDir, this.clientDir),
+              format: 'esm',
+              exports: 'named',
+            },
+            {
+              dir: path.join(outputDir, this.clientLegacyDir),
+              format: 'system',
+              exports: 'named',
+            },
+          ].map((outputOptions) => build.write(outputOptions))
+        )
+      )
   }
 
   getComponent(localPath) {
@@ -120,17 +115,6 @@ class EleventySvelte {
       throw new Error(`"${localPath}" is not a valid Svelte template.`)
     }
     return this.components[localPath]
-  }
-
-  renderComponent(component, props) {
-    return component.render(props).html
-  }
-
-  getAssetUrls(component) {
-    return {
-      client: path.relative(this.outputDir, component.client),
-      clientLegacy: path.relative(this.outputDir, component.clientLegacy),
-    }
   }
 }
 

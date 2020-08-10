@@ -12,7 +12,7 @@
   export const data = () => {
     return {
       layout: 'layouts/main.njk',
-      title: 'Index',
+      title: 'Possums',
       pagination: {
         data: 'possums',
         size: 1,

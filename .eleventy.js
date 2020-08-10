@@ -29,9 +29,8 @@ module.exports = function (eleventyConfig, configOptions = {}) {
 
   eleventyConfig.addFilter('getSvelteClient', function (id) {
     const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
-    const assets = eleventySvelte.getAssetUrls(component)
     return `
-      import Component from '${eleventySvelte.pathPrefix}${url.format(path.join(options.assetDir, assets.client))}';
+      import Component from '${url.format(component.client)}';
       new Component({
         target: document.getElementById('${id}'),
         props: window.__DATA__,
@@ -42,9 +41,8 @@ module.exports = function (eleventyConfig, configOptions = {}) {
 
   eleventyConfig.addFilter('getSvelteClientLegacy', function (id) {
     const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
-    const assets = eleventySvelte.getAssetUrls(component)
     return `
-      System.import('/${url.format(path.join(options.assetDir, assets.clientLegacy))}')
+      System.import('/${component.clientLegacy}')
         .then(c => {
           new c.default({
             target: document.getElementById('${id}'),
@@ -58,20 +56,11 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   eleventyConfig.addExtension('11ty.svelte', {
     read: false, // We use rollup to read the files
     getData: true,
+    init: async function () {
+      await eleventySvelte.build(this.config.dir.output, this.config.pathPrefix)
+    },
     getInstanceFromInputPath: function (inputPath) {
       return eleventySvelte.getComponent(path.normalize(inputPath)).ssr
-    },
-    init: async function () {
-      eleventySvelte.setPathPrefix(this.config.pathPrefix)
-      eleventySvelte.setDirs(options.cacheDir, path.join(this.config.dir.output, options.assetDir))
-      let components = await eleventySvelte.write()
-
-      for (let component of components) {
-        let inputPath = eleventySvelte.getLocalFilePath(component.ssr.facadeModuleId)
-        let jsFilename = component.ssr.fileName
-        eleventySvelte.addComponentToJsMapping(inputPath, jsFilename)
-        eleventySvelte.addComponent(inputPath)
-      }
     },
     compile: function (str, inputPath) {
       return (data) => {
@@ -79,8 +68,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
           // When str has a value, it's being used for permalinks in data
           return typeof str === 'function' ? str(data) : str
         }
-        const component = eleventySvelte.getComponent(path.normalize(data.page.inputPath))
-        return eleventySvelte.renderComponent(component.ssr.default, data)
+        return eleventySvelte.getComponent(path.normalize(inputPath)).ssr.default.render(data).html
       }
     },
   })
