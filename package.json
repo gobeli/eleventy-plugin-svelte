@@ -1,7 +1,7 @@
 {
   "name": "eleventy-plugin-svelte",
   "version": "0.1.4",
-  "description": "",
+  "description": "Use Svelte components in Eleventy.",
   "main": ".eleventy.js",
   "scripts": {
     "dev": "cd example && env ELEVENTY_EXPERIMENTAL=true NODE_ENV=development npx @11ty/eleventy --serve",
@@ -28,11 +28,11 @@
   },
   "homepage": "https://github.com/gobeli/eleventy-plugin-svelte#readme",
   "dependencies": {
-    "@rollup/plugin-node-resolve": "^8.0.1",
+    "@rollup/plugin-node-resolve": "^8.4.0",
     "globby": "^11.0.1",
-    "rollup": "^2.16.1",
-    "rollup-plugin-svelte": "^5.2.2",
-    "svelte": "^3.23.2"
+    "rollup": "^2.23.1",
+    "rollup-plugin-svelte": "^5.2.3",
+    "svelte": "^3.24.1"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.11.0",
