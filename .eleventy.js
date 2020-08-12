@@ -19,29 +19,28 @@ module.exports = function (eleventyConfig, configOptions = {}) {
 
   eleventyConfig.addTemplateFormats('11ty.svelte')
 
-  eleventyConfig.addFilter('getDataForComponent', function (dataFn) {
-    const data = 'window.__DATA__ = '
-    if (typeof dataFn === 'function') {
-      return data + JSON.stringify(dataFn(this.ctx))
-    }
-    return data + '{}'
+  eleventyConfig.addFilter('svelteData', function (dataFn) {
+    return `window.__DATA__ = ${typeof dataFn === 'function' ? JSON.stringify(dataFn(this.ctx)) : '{}'}`
   })
 
-  eleventyConfig.addFilter('getSvelteClient', function (id) {
-    const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
+  eleventyConfig.addShortcode('svelteClient', function (id) {
+    const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
     return `
+    <script type="module">
       import Component from '${url.format(component.client)}';
       new Component({
         target: document.getElementById('${id}'),
         props: window.__DATA__,
         hydrate: true
       })
+    </script>
     `
   })
 
-  eleventyConfig.addFilter('getSvelteClientLegacy', function (id) {
-    const component = eleventySvelte.getComponent(path.normalize(this.ctx.page.inputPath))
+  eleventyConfig.addShortcode('svelteClientLegacy', function (id) {
+    const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
     return `
+    <script nomodule>
       System.import('/${component.clientLegacy}')
         .then(c => {
           new c.default({
@@ -50,6 +49,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
             hydrate: true
           });
         });
+    </script>
     `
   })
 

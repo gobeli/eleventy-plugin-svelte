@@ -102,16 +102,13 @@ module.exports = function (eleventyConfig) {
   </body>
   <script>
     // Provides the data used on the client side (dataFn is a function defining the used data)
-    {{ dataFn | getDataForComponent | safe }}
+    {{ dataFn | svelteData | safe }}
   </script>
-  <script type="module">
-    // Gets the svelte client side code for browsers which support es modules ("app" is the id of the HTMLElement the app is going to mount on)
-    {{ "app" | getSvelteClient | safe }}
-  </script>
+  <!-- Gets the svelte client side code for browsers which support es modules ("app" is the id of the HTMLElement the app is going to mount on) -->
+  {% svelteClient 'app' %}
+  <!-- The legacy bundle needs systemjs to be loaded -->
   <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.3.2/s.min.js"></script>
-  <script nomodule>
-    // Gets the svelte client side code for browsers do not support es modules ("app" is the id of the HTMLElement the app is going to mount on)
-    {{ "app" | getSvelteClientLegacy | safe }}
-  </script>
+  <!-- Gets the svelte client side code for browsers do not support es modules ("app" is the id of the HTMLElement the app is going to mount on) -->
+  {% svelteClientLegacy 'app' %}
 </html>
 ```
