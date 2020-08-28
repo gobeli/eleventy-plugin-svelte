@@ -3,7 +3,6 @@ const path = require('path')
 const url = require('url')
 
 const defaultOptions = {
-  cacheDir: '.cache/svelte',
   assetDir: 'assets',
   outputClient: true,
   rollupPluginSvelteSSROptions: {},
@@ -60,7 +59,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
       await eleventySvelte.build(this.config.dir.output, this.config.pathPrefix)
     },
     getInstanceFromInputPath: function (inputPath) {
-      return eleventySvelte.getComponent(path.normalize(inputPath)).ssr
+      return eleventySvelte.getComponent(path.normalize(inputPath))
     },
     compile: function (str, inputPath) {
       return (data) => {
@@ -68,7 +67,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
           // When str has a value, it's being used for permalinks in data
           return typeof str === 'function' ? str(data) : str
         }
-        return eleventySvelte.getComponent(path.normalize(inputPath)).ssr.default.render(data).html
+        return eleventySvelte.getComponent(path.normalize(inputPath)).ssr.render(data).html
       }
     },
   })

@@ -7,7 +7,6 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 class EleventySvelte {
   constructor({
-    cacheDir,
     assetDir,
     rollupPluginSvelteSSROptions,
     rollupSSRPlugins,
@@ -24,7 +23,6 @@ class EleventySvelte {
     this.rollupPluginSvelteClientOptions = rollupPluginSvelteClientOptions
     this.rollupClientPlugins = rollupClientPlugins
 
-    this.ssrDir = path.join(this.workingDir, cacheDir, 'ssr')
     this.clientDir = path.join(assetDir, 'client')
     this.clientLegacyDir = path.join(assetDir, 'client_legacy')
 
@@ -33,47 +31,54 @@ class EleventySvelte {
   }
 
   async build(outputDir, pathPrefix = '') {
-    const input = await globby('**/*.11ty.svelte', { gitignore: this.useGitIgnore })
+    const inputs = await globby('**/*.11ty.svelte', { gitignore: this.useGitIgnore })
 
-    const ssrOutput = await this.buildSSR(input)
+    const ssrOutputs = await this.buildSSR(inputs)
     let clientOutput, clientLegacyOutput
     if (this.outputClient) {
-      ;[clientOutput, clientLegacyOutput] = await this.buildClient(input, outputDir)
+      ;[clientOutput, clientLegacyOutput] = await this.buildClient(inputs, outputDir)
     }
 
-    for (let entry of ssrOutput.output) {
+    for (let {
+      output: [entry],
+    } of ssrOutputs) {
       if (!!entry.facadeModuleId) {
+        const ssrModule = requireFromString(entry.code, entry.facadeModuleId)
         this.components[path.relative(this.workingDir, entry.facadeModuleId)] = {
-          ssr: require(path.join(this.ssrDir, entry.fileName)),
+          ssr: ssrModule.default,
           client: clientOutput && path.join(pathPrefix, this.clientDir, entry.fileName),
           clientLegacy: clientLegacyOutput && path.join(this.clientLegacyDir, entry.fileName),
+          data: ssrModule.data,
         }
       }
     }
   }
 
-  buildSSR(input) {
-    return rollup
-      .rollup({
-        input,
-        plugins: [
-          svelte({
-            generate: 'ssr',
-            hydratable: this.outputClient,
-            css: false,
-            ...this.rollupPluginSvelteSSROptions,
-          }),
-          ...this.rollupSSRPlugins,
-        ],
-        external: [/^svelte/],
-      })
-      .then((build) =>
-        build.write({
-          dir: this.ssrDir,
-          format: 'cjs',
-          exports: 'named',
-        })
+  buildSSR(inputs) {
+    return Promise.all(
+      inputs.map((input) =>
+        rollup
+          .rollup({
+            input,
+            plugins: [
+              svelte({
+                generate: 'ssr',
+                hydratable: this.outputClient,
+                css: false,
+                ...this.rollupPluginSvelteSSROptions,
+              }),
+              ...this.rollupSSRPlugins,
+            ],
+            external: [/^svelte/],
+          })
+          .then((build) =>
+            build.generate({
+              format: 'cjs',
+              exports: 'named',
+            })
+          )
       )
+    )
   }
 
   buildClient(input, outputDir) {
@@ -116,6 +121,13 @@ class EleventySvelte {
     }
     return this.components[localPath]
   }
+}
+
+function requireFromString(src, filename) {
+  const m = new module.constructor()
+  m.paths = module.paths
+  m._compile(src, filename)
+  return m.exports
 }
 
 module.exports = EleventySvelte
