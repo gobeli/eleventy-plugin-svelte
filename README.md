@@ -41,9 +41,6 @@ const eleventySvelte = require('eleventy-plugin-svelte')
 module.exports = function (eleventyConfig) {
   // Use Defaults
   eleventyConfig.addPlugin(eleventySvelte, {
-    // Directory to store compiled ssr components
-    cacheDir: '.cache/svelte',
-
     // Directory to emit client side JS code
     assetDir: 'assets',
 
