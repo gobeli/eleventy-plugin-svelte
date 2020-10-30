@@ -9,7 +9,7 @@ Heavily inspired by [eleventy-plugin-vue](https://github.com/11ty/eleventy-plugi
 
 `npm install eleventy-plugin-svelte`
 
-- Requires experimental features in Eleventy, specifically: Custom File Extension Handlers feature from Eleventy. Opt in to experimental features on Eleventy by running ELEVENTY_EXPERIMENTAL=true npx @11ty/eleventy.
+- Requires experimental features in Eleventy, specifically: Custom File Extension Handlers feature from Eleventy. Opt in to experimental features on Eleventy by running `ELEVENTY_EXPERIMENTAL=true` npx @11ty/eleventy.
 
 ## Features
 
@@ -47,15 +47,15 @@ module.exports = function (eleventyConfig) {
     // If false client side bundle is not generated
     outputClient: true,
 
-    // Options for the rollup-plugin-svelte for prerendering 
+    // Options for the rollup-plugin-svelte for prerendering
     rollupPluginSvelteSSROptions: {},
-    
-    // Options for the rollup-plugin-svelte for the client side code 
+
+    // Options for the rollup-plugin-svelte for the client side code
     rollupPluginSvelteClientOptions: {},
-    
+
     // Additional rollup plugins for prerendering
     rollupSSRPlugins: [],
-    
+
     // Additional rollup plugins for the client side code
     rollupClientPlugins: [],
   })
@@ -83,7 +83,6 @@ module.exports = function (eleventyConfig) {
     rollupClientPlugins: [postcss(), !dev && terser()],
   })
 }
-
 ```
 
 ### Template Functions
