@@ -9,7 +9,7 @@ Heavily inspired by [eleventy-plugin-vue](https://github.com/11ty/eleventy-plugi
 
 `npm install eleventy-plugin-svelte`
 
-- Requires experimental features in Eleventy, specifically: Custom File Extension Handlers feature from Eleventy. Opt in to experimental features on Eleventy by running `ELEVENTY_EXPERIMENTAL=true` npx @11ty/eleventy.
+- Requires experimental features in Eleventy, specifically: Custom File Extension Handlers feature from Eleventy. Opt in to experimental features on Eleventy by running `ELEVENTY_EXPERIMENTAL=true npx @11ty/eleventy`.
 
 ## Features
 
