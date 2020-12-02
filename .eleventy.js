@@ -11,6 +11,8 @@ const defaultOptions = {
   rollupSSRPlugins: [],
 }
 
+const svelteComponentRegex = new RegExp(/11ty.svelte$/);
+
 module.exports = function (eleventyConfig, configOptions = {}) {
   const options = { ...eleventyConfig, ...defaultOptions, ...configOptions }
 
@@ -23,6 +25,9 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   })
 
   eleventyConfig.addShortcode('svelteClient', function (id) {
+    if (!svelteComponentRegex.test(id)) {
+      return '';
+    }
     const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
     return `
     <script type="module">
@@ -37,6 +42,9 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   })
 
   eleventyConfig.addShortcode('svelteClientLegacy', function (id) {
+    if (!svelteComponentRegex.test(id)) {
+      return '';
+    }
     const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
     return `
     <script nomodule>
