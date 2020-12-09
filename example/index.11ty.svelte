@@ -1,3 +1,7 @@
+<svelte:head>
+  <meta name="description" content="Website about possums">
+</svelte:head>
+
 <script context="module">
   export const data = () => {
     return {

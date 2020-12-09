@@ -75,7 +75,16 @@ module.exports = function (eleventyConfig, configOptions = {}) {
           // When str has a value, it's being used for permalinks in data
           return typeof str === 'function' ? str(data) : str
         }
-        return eleventySvelte.getComponent(path.normalize(inputPath)).ssr.render(data).html
+
+        const {
+          html,
+          head
+        } = eleventySvelte.getComponent(path.normalize(inputPath)).ssr.render(data);
+
+        return {
+          html,
+          head
+        }
       }
     },
   })
