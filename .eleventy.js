@@ -25,7 +25,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   })
 
   eleventyConfig.addShortcode('svelteClient', function (id) {
-    if (!svelteComponentRegex.test(id)) {
+    if (!svelteComponentRegex.test(this.page.inputPath)) {
       return '';
     }
     const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
@@ -42,7 +42,7 @@ module.exports = function (eleventyConfig, configOptions = {}) {
   })
 
   eleventyConfig.addShortcode('svelteClientLegacy', function (id) {
-    if (!svelteComponentRegex.test(id)) {
+    if (!svelteComponentRegex.test(this.page.inputPath)) {
       return '';
     }
     const component = eleventySvelte.getComponent(path.normalize(this.page.inputPath))
@@ -78,12 +78,17 @@ module.exports = function (eleventyConfig, configOptions = {}) {
 
         const {
           html,
-          head
+          head,
+          css
         } = eleventySvelte.getComponent(path.normalize(inputPath)).ssr.render(data);
 
         return {
           html,
-          head
+          head,
+          css: css.code,
+          toString() {
+            return html
+          }
         }
       }
     },

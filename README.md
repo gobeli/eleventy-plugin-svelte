@@ -71,30 +71,40 @@ const terser = require('rollup-plugin-terser').terser
 
 const dev = process.env.NODE_ENV === 'development'
 
+// Example with prerendering the styles and omitting them in the client bundle.
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(eleventySvelte, {
-    rollupPluginSvelteSSROptions: {
-      dev,
-    },
+    rollupSSRPlugins: [postcss()],
     rollupPluginSvelteClientOptions: {
-      dev,
-      emitCss: true,
+      emitCss: false,
+      compilerOptions: {
+        css: false
+      }
     },
-    rollupClientPlugins: [postcss(), !dev && terser()],
+    rollupClientPlugins: [!dev && terser()],
   })
 }
 ```
 
-### Template Functions
+### Template Variables and Functions
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
     ...
+    <!-- Adds content from svelte:head -->
+    {{ content.head | safe }}
+    
+    <!-- Adds prerendered css -->
+    <style>
+      {{ content.css | safe }}
+    </style>
   </head>
   <body>
     ....
+    <!-- Adds prerendered html -->
+    {{ content | safe }}  
   </body>
   <script>
     // Provides the data used on the client side (dataFn is a function defining the used data)

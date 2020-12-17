@@ -6,13 +6,13 @@ const dev = process.env.NODE_ENV === 'development'
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventySvelte, {
-    rollupPluginSvelteSSROptions: {
-      dev,
-    },
+    rollupSSRPlugins: [postcss()],
     rollupPluginSvelteClientOptions: {
-      dev,
-      emitCss: true,
+      emitCss: false,
+      compilerOptions: {
+        css: false
+      }
     },
-    rollupClientPlugins: [postcss(), !dev && terser()],
+    rollupClientPlugins: [!dev && terser()],
   })
 }

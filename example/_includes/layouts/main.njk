@@ -6,10 +6,13 @@
     <title>{{ title }}</title>
   
     {{ content.head | safe }}
+    <style>
+      {{ content.css | safe }}
+    </style>
   </head>
   <body>
     <div id="app">
-      {{ content.html | safe }}
+      {{ content | safe }}
     </div>
   </body>
   <script>

@@ -62,10 +62,12 @@ class EleventySvelte {
             input,
             plugins: [
               svelte({
-                generate: 'ssr',
-                hydratable: this.outputClient,
-                css: false,
                 ...this.rollupPluginSvelteSSROptions,
+                compilerOptions: {
+                  generate: 'ssr',
+                  hydratable: this.outputClient,
+                  ...this.rollupPluginSvelteSSROptions.compilerOptions
+                },
               }),
               ...this.rollupSSRPlugins,
             ],
@@ -87,8 +89,11 @@ class EleventySvelte {
         input,
         plugins: [
           svelte({
-            hydratable: true,
             ...this.rollupPluginSvelteClientOptions,
+            compilerOptions: {
+              hydratable: true,
+              ...this.rollupPluginSvelteClientOptions.compilerOptions
+            },
           }),
           nodeResolve({
             browser: true,
